@@ -115,4 +115,4 @@ if __name__ == "__main__":
         elif "play songs" in query:
             songs_dir = "C:\Users\DELL\Music\Music"
             songs=os.listdir(songs_dir)
-            os.startfile(os.path.join(songs_dir,songs[2]))
+            os.startfile(os.path.join(songs_dir,songs[3]))
