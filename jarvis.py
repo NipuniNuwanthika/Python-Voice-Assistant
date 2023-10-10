@@ -1,3 +1,4 @@
+import subprocess
 import pyttsx3  #pip install pyttsx3
 import datetime
 import speech_recognition as sr #pip install SpeechRecognition
@@ -5,6 +6,10 @@ import wikipedia
 import smtplib
 import webbrowser as wb
 import os
+import pyautogui #pip install pyautogui
+import psutil #pip install psutil
+import pyjokes #pip install pyjokes
+
 engine=pyttsx3.init()
 sentence= "Hi I am your Assistant."
 
@@ -68,9 +73,24 @@ def sendmail(to, content):
     server =smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
-    server.login("test@gmail.com", "123test")
+    server.login("test@gmail.com", "1234")
     server.sendmail("test@gmail.com", to,content)
     server.close()
+
+def screenshot():
+    img = pyautogui.screenshot()
+    img.save("S:\Python-Voice-Assistant\Screenshots\ss.png")
+
+def cpu():
+    usage =str(psutil.cpu_percent())
+    speak("CPU is at "+ usage)
+
+    battery=psutil.sensors_battery()
+    speak("Battery is at ")
+    speak(battery.percent)
+
+def jokes():
+    speak(pyjokes.get_joke())
 
 if __name__ == "__main__":
     wishme()
@@ -95,24 +115,42 @@ if __name__ == "__main__":
             try:
                 speak("What should I say?")
                 content = takeCommand()
-                to = "xyz@gmail.com"
-                # sendmail(to, content) #enable less secure app
+                to = "send@gmail.com"
+                sendmail(to, content) #enable less secure app. otherwise we need to use OAuth 2.0 authentication.
                 speak("Email sent Successfully!")
             except Exception as e:
                 print(e)
                 speak("Unable to send the message")
         elif "chrome" in query:
             speak("What should I search?")
-            chromepath = "C:\Program Files\Google\Chrome\Application\chrome.exe %s"
+            chromepath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
             search = takeCommand().lower()
-            wb.get(chromepath).open_new_tab(search+".com")
-        elif "logout" in query:
-            os.system("shutdown - 1")
-        elif "shutdown" in query:
+            chromepath = r"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            subprocess.Popen([chromepath, f"https://www.google.com/search?q={search}"])
+        elif "log out" in query:
+            os.system("shutdown /l")
+        elif "shut down" in query:
             os.system("Shutdown /s /t 1")
         elif "restart" in query:
             os.system("Shutdown /r /t 1")
         elif "play songs" in query:
-            songs_dir = "C:\Users\DELL\Music\Music"
+            songs_dir = "C:\\Users\\DELL\\Music\\Music"
             songs=os.listdir(songs_dir)
-            os.startfile(os.path.join(songs_dir,songs[3]))
+            os.startfile(os.path.join(songs_dir,songs[1]))
+        elif "remember that" in query: 
+            speak("What should I remember?")
+            data = takeCommand()
+            speak("You said me to remember that"+data)
+            remember = open("data.txt", "w")
+            remember.write(data)
+            remember.close()
+        elif "do you know anything" in query:
+            remember = open("data.txt", "r")
+            speak("You said me to remember that"+ remember.read())
+        elif "screenshot" in query:
+            screenshot()
+            speak("Done!")
+        elif "cpu" in query:
+            cpu() 
+        elif "joke" in query:
+            jokes()
